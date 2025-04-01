@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import SignupImage from '../assets/signup.jpg';
 
 const SignupPage = () => {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -17,7 +18,7 @@ const SignupPage = () => {
     }
 
     setError('');
-    console.log('Form submitted with:', { email, password, role });
+    console.log('Form submitted with:', { username, email, password, role });
   };
 
   return (
@@ -38,6 +39,24 @@ const SignupPage = () => {
           <h2 className="text-3xl font-bold text-center mb-6">Sign Up</h2>
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
           <form onSubmit={handleSubmit}>
+            
+            {/* Username Field */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2" htmlFor="username">
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                required
+              />
+            </div>
+
+            {/* Email Field */}
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2" htmlFor="email">
                 Email
@@ -53,6 +72,7 @@ const SignupPage = () => {
               />
             </div>
 
+            {/* Password Field */}
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2" htmlFor="password">
                 Password
@@ -68,11 +88,9 @@ const SignupPage = () => {
               />
             </div>
 
+            {/* Confirm Password Field */}
             <div className="mb-4">
-              <label
-                className="block text-sm font-medium mb-2"
-                htmlFor="confirm-password"
-              >
+              <label className="block text-sm font-medium mb-2" htmlFor="confirm-password">
                 Confirm Password
               </label>
               <input
@@ -86,6 +104,7 @@ const SignupPage = () => {
               />
             </div>
 
+            {/* Role Selection */}
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2" htmlFor="role">
                 Sign up as
@@ -98,13 +117,14 @@ const SignupPage = () => {
               >
                 <option value="traveler">Traveler</option>
                 <option value="travel-agency">Travel Agency</option>
-                <option value="Admin">Admin</option>
+                <option value="admin">Admin</option>
               </select>
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full bg-green-600 text-white py-3 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
             >
               Sign Up
             </button>
@@ -112,10 +132,7 @@ const SignupPage = () => {
 
           <p className="text-sm text-center mt-4">
             Already have an account?{' '}
-            <a
-              href="/login"
-              className="text-blue-600 hover:underline font-medium"
-            >
+            <a href="/login" className="text-gray-600 hover:underline font-medium">
               Log In
             </a>
           </p>

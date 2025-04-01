@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import TravHome from './pages/TravHome';
+import AgencyDash from './pages/agencyDash';
 import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
 import BookingPage from "./pages/BookingPage";
@@ -24,8 +25,11 @@ const App = () => {
         {/* Traveler Home */}
         <Route path="/travhome" element={<TravHome />} /> 
 
+        <Route path="/AgencyDash" element={<AgencyDash />} />
+
+
         {/* Signup Page */}
-        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/signup" element={<SignupPage />} /> 
 
         {/* Login Page */}
         <Route path="/login" element={<LoginPage />} />

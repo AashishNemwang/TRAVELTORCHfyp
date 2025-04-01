@@ -12,8 +12,8 @@ const LandingPage = () => {
   const navigate = useNavigate(); 
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % images.length);
+    const interval = setInterval(() => { 
+      setCurrentImage((prev) => (prev + 1) % images.length);  
     }, 3000); 
     return () => clearInterval(interval);
   }, []);

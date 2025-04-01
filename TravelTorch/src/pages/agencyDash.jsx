@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Button } from "./../components/ui/button";
+import  Button  from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { Table, Thead, Tbody, Tr, Th, Td } from "../components/ui/table";
 
-function agencyDash() {
+function AgencyDash() {
   const [packages, setPackages] = useState([
     { id: 1, name: "Bali Adventure", price: "$1200", duration: "7 Days" },
     { id: 2, name: "Paris Getaway", price: "$1800", duration: "5 Days" },
@@ -67,4 +67,4 @@ function AgencySidebar() {
   );
 }
 
-export default agencyDash;
+export default AgencyDash;
