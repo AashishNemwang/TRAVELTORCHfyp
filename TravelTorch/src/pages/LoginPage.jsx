@@ -1,38 +1,54 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import LoginImage from '../assets/login.jpg';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted with:', { email, password });
+    try {
+      const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+
+      if (res.data.success) {
+        localStorage.setItem('token', res.data.token); // Store JWT
+        localStorage.setItem('role', res.data.role); // Store role
+        redirectUser(res.data.role); // Redirect user
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed.');
+    }
+  };
+
+  const redirectUser = (role) => {
+    if (role === 'admin') navigate('/admin/dashboard');
+    else if (role === 'travel-agency') navigate('/agency/dashboard');
+    else navigate('/'); // Traveler homepage
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
+      {/* Left Side (Image) */}
       <div className="w-1/2 flex flex-col items-center justify-center bg-blue-100">
-        <div className="flex justify-center mb-6">
-          <img
-            src={LoginImage}
-            alt="Login Illustration"
-            className="rounded-lg shadow-lg"
-            style={{ maxHeight: '600px', width: 'auto' }}
-          />
-        </div>
+        <img src={LoginImage} alt="Login" className="rounded-lg shadow-lg max-h-[600px]" />
       </div>
 
+      {/* Right Side (Form) */}
       <div className="w-1/2 flex items-center justify-center bg-white">
         <div className="w-3/4 border border-gray-300 rounded-lg shadow-lg p-6">
           <h2 className="text-3xl font-bold text-center mb-6">Log In</h2>
+          
+          {/* Show Error Message */}
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
+          {/* Login Form */}
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2" htmlFor="email">
-                Email
-              </label>
+              <label className="block text-sm font-medium mb-2" htmlFor="email">Email</label>
               <input
                 type="email"
                 id="email"
@@ -45,9 +61,7 @@ const LoginPage = () => {
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2" htmlFor="password">
-                Password
-              </label>
+              <label className="block text-sm font-medium mb-2" htmlFor="password">Password</label>
               <input
                 type="password"
                 id="password"
@@ -59,6 +73,7 @@ const LoginPage = () => {
               />
             </div>
 
+            {/* Login Button */}
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
@@ -67,21 +82,16 @@ const LoginPage = () => {
             </button>
           </form>
 
+          {/* Forgot Password & Sign Up Links */}
           <p className="text-sm text-center mt-4">
-            <a
-              href="/forgot-password"
-              className="text-blue-600 hover:underline font-medium"
-            >
+            <a href="/forgot-password" className="text-blue-600 hover:underline font-medium">
               Forgot Password?
             </a>
           </p>
 
           <p className="text-sm text-center mt-4">
             Don’t have an account?{' '}
-            <a
-              href="/signup"
-              className="text-blue-600 hover:underline font-medium"
-            >
+            <a href="/signup" className="text-blue-600 hover:underline font-medium">
               Sign Up
             </a>
           </p>

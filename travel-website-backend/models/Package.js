@@ -1,58 +1,36 @@
-const db = require("../config/db");
+// // models/Package.js
+// const db = require('../config/db'); // Ensure you have your DB connection setup
 
-const Package = {
-  addPackage: (pkg, callback) => {
-    const { name, description, date, price, photo, agency_id } = pkg;
-    const sql = `INSERT INTO travel_packages (name, description, date, price, photo, agency_id) 
-                 VALUES (?, ?, ?, ?, ?, ?)`;
-    db.query(sql, [name, description, date, price, photo, agency_id], callback);
-  },
+// class Package {
+//   static addPackage(data, callback) {
+//     const query = 'INSERT INTO packages (name, description, date, price, photo, agency_id) VALUES (?, ?, ?, ?, ?, ?)';
+//     db.query(query, [data.name, data.description, data.date, data.price, data.photo, data.agency_id], callback);
+//   }
 
-  getAllPackages: (filters, callback) => {
-    let sql = `SELECT * FROM travel_packages WHERE 1=1`;
-    let params = [];
+//   static getAllPackages(filters, callback) {
+//     let query = 'SELECT * FROM packages WHERE 1=1';
+//     const params = [];
 
-    if (filters.search) {
-      sql += ` AND (name LIKE ? OR description LIKE ?)`;
-      params.push(`%${filters.search}%`, `%${filters.search}%`);
-    }
-    if (filters.minPrice) {
-      sql += ` AND price >= ?`;
-      params.push(filters.minPrice);
-    }
-    if (filters.maxPrice) {
-      sql += ` AND price <= ?`;
-      params.push(filters.maxPrice);
-    }
-    if (filters.startDate) {
-      sql += ` AND date >= ?`;
-      params.push(filters.startDate);
-    }
-    if (filters.endDate) {
-      sql += ` AND date <= ?`;
-      params.push(filters.endDate);
-    }
+//     if (filters.search) {
+//       query += ' AND name LIKE ?';
+//       params.push(`%${filters.search}%`);
+//     }
+//     // Add other filters similarly...
+//     db.query(query, params, callback);
+//   }
 
-    db.query(sql, params, callback);
-  },
+//   static getPackageById(id, callback) {
+//     db.query('SELECT * FROM packages WHERE id = ?', [id], callback);
+//   }
 
-  getPackageById: (id, callback) => {
-    const sql = "SELECT * FROM travel_packages WHERE id = ?";
-    db.query(sql, [id], callback);
-  },
+//   static updatePackage(id, data, callback) {
+//     const query = 'UPDATE packages SET name=?, description=?, date=?, price=?, photo=? WHERE id=?';
+//     db.query(query, [data.name, data.description, data.date, data.price, data.photo, id], callback);
+//   }
 
-  updatePackage: (id, pkg, callback) => {
-    const { name, description, date, price, photo } = pkg;
-    const sql = `UPDATE travel_packages 
-                 SET name=?, description=?, date=?, price=?, photo=? 
-                 WHERE id=?`;
-    db.query(sql, [name, description, date, price, photo, id], callback);
-  },
+//   static deletePackage(id, callback) {
+//     db.query('DELETE FROM packages WHERE id = ?', [id], callback);
+//   }
+// }
 
-  deletePackage: (id, callback) => {
-    const sql = "DELETE FROM travel_packages WHERE id = ?";
-    db.query(sql, [id], callback);
-  }
-};
-
-module.exports = Package;
+// module.exports = Package;

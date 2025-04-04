@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // For redirection
 import SignupImage from '../assets/signup.jpg';
 
 const SignupPage = () => {
@@ -8,8 +10,10 @@ const SignupPage = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState('traveler');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate(); // Hook for navigation
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -17,8 +21,28 @@ const SignupPage = () => {
       return;
     }
 
-    setError('');
-    console.log('Form submitted with:', { username, email, password, role });
+    try {
+      setLoading(true);
+      setError('');
+
+      const res = await axios.post('http://localhost:5000/api/auth/register', {
+        username,
+        email,
+        password,
+        role,
+      });
+
+      console.log('Signup successful:', res.data);
+      
+      alert('Signup successful! Redirecting to login...');
+      navigate('/login'); // Redirect user after successful signup
+
+    } catch (error) {
+      console.error('Signup error:', error.response?.data || error.message);
+      setError(error.response?.data?.message || 'Signup failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -42,12 +66,9 @@ const SignupPage = () => {
             
             {/* Username Field */}
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2" htmlFor="username">
-                Username
-              </label>
+              <label className="block text-sm font-medium mb-2">Username</label>
               <input
                 type="text"
-                id="username"
                 placeholder="Enter your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -58,12 +79,9 @@ const SignupPage = () => {
 
             {/* Email Field */}
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2" htmlFor="email">
-                Email
-              </label>
+              <label className="block text-sm font-medium mb-2">Email</label>
               <input
                 type="email"
-                id="email"
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -74,12 +92,9 @@ const SignupPage = () => {
 
             {/* Password Field */}
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2" htmlFor="password">
-                Password
-              </label>
+              <label className="block text-sm font-medium mb-2">Password</label>
               <input
                 type="password"
-                id="password"
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -90,12 +105,9 @@ const SignupPage = () => {
 
             {/* Confirm Password Field */}
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2" htmlFor="confirm-password">
-                Confirm Password
-              </label>
+              <label className="block text-sm font-medium mb-2">Confirm Password</label>
               <input
                 type="password"
-                id="confirm-password"
                 placeholder="Confirm your password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -106,11 +118,8 @@ const SignupPage = () => {
 
             {/* Role Selection */}
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2" htmlFor="role">
-                Sign up as
-              </label>
+              <label className="block text-sm font-medium mb-2">Sign up as</label>
               <select
-                id="role"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
@@ -125,8 +134,9 @@ const SignupPage = () => {
             <button
               type="submit"
               className="w-full bg-green-600 text-white py-3 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              disabled={loading}
             >
-              Sign Up
+              {loading ? 'Signing Up...' : 'Sign Up'}
             </button>
           </form>
 

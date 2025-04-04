@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import TravHome from './pages/TravHome';
-import AgencyDash from './pages/agencyDash';
+import AgencyDash from './pages/AgencyDash';
 import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
 import BookingPage from "./pages/BookingPage";
