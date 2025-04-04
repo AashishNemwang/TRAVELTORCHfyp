@@ -18,6 +18,7 @@ import MustangImg from '../assets/Mustang.jpg';
 import GosaikundaImg from '../assets/Gosaikunda.jpg';
 import IlamImg from '../assets/Illam.jpg';
 import JanakpurImg from '../assets/Janakpur.jpg';
+import NavBar from '../components/NavBar';
 
 const TravHome = () => {
   const [filters, setFilters] = useState({ destination: '', date: '', category: '' });
@@ -57,18 +58,7 @@ const TravHome = () => {
   return (
     <div>
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 w-full bg-black bg-opacity-70 text-white py-4 shadow-md z-50">
-        <div className="container mx-auto flex justify-between items-center px-6">
-          <h1 className="text-2xl font-bold">TravelTorch</h1>
-          <div className="space-x-4 flex font-semibold text-lg">
-            <button onClick={() => navigate('/')} className=" text-white px-4 py-2 rounded hover:bg-gray-600 ">Home</button>
-            <button onClick={scrollToPackages} className=" text-white px-4 py-2 rounded hover:bg-gray-600 ">Packages</button>
-            <button onClick={() => navigate('/contact')} className=" text-white px-4 py-2 rounded hover:bg-gray-600">Contact</button>
-            <Link to="/login" className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-white hover:text-gray-600
-            ">Login</Link>
-          </div>
-        </div>
-      </nav>
+      <NavBar func={scrollToPackages}/>
 
       {/* Hero Section with Search Filter */}
       <section className="relative h-screen bg-cover bg-center flex items-center" style={{ backgroundImage: `url(${HeroImg})` }}>

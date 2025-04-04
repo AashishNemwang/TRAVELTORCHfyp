@@ -43,7 +43,7 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
+    const token = jwt.sign({user:user}, process.env.JWT_SECRET, {
       expiresIn: "1h" 
     });
 
@@ -56,3 +56,22 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: err.message || "Login failed" });
   }
 };
+
+exports.getTheLoginedUser=async(req,res)=>{
+try{
+  const {token}=req.body;
+  //console.log(token);
+  const userData=await jwt.verify(token,process.env.JWT_SECRET);
+  if(userData){
+    return res.status(200).json({message:"user found",user:userData});
+  }
+  return res.status(200).json({message:"user found",user:userData});
+
+}
+catch(error){
+
+  console.log(error);
+  return res.status(200).json({message:'no user is logined.',error:error?.message})
+}
+}
+

@@ -13,10 +13,11 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      //console.log(res)
 
-      if (res.data.success) {
+      if (res?.data?.user) {
         localStorage.setItem('token', res.data.token); // Store JWT
-        localStorage.setItem('role', res.data.role); // Store role
+        localStorage.setItem('role', res.data?.user?.role); // Store role
         redirectUser(res.data.role); // Redirect user
       }
     } catch (err) {
@@ -27,7 +28,7 @@ const LoginPage = () => {
   const redirectUser = (role) => {
     if (role === 'admin') navigate('/admin/dashboard');
     else if (role === 'travel-agency') navigate('/agency/dashboard');
-    else navigate('/'); // Traveler homepage
+    else navigate('/travhome'); // Traveler homepage
   };
 
   return (

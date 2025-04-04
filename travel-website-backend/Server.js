@@ -2,11 +2,18 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const authRoutes = require("./routes/authRoutes");
+const dotenv=require('dotenv');
+dotenv.config();
 // const travelPackageRoutes = require("./routes/packageRoutes");
 // const bookingRoutes = require("./routes/bookingRoutes"); 
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin:process.env.FRONTEND_URL,
+  credentials:true,
+  methods:['GET',"POST","PATCH","PUT","DELETE"],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(bodyParser.json());
 
 app.use("/api/auth", authRoutes);
