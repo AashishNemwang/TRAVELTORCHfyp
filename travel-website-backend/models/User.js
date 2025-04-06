@@ -1,4 +1,3 @@
-// models/User.js
 const db = require('../config/db');
 
 module.exports = {
@@ -8,7 +7,13 @@ module.exports = {
   },
   
   createUser: async (userData) => {
-    const { username, email, password, role } = userData;
+    const { username, email, password, role = 'traveler' } = userData;
+    const validRoles = ['traveler', 'agency', 'admin'];
+    
+    if (!validRoles.includes(role)) {
+      throw new Error('Invalid user role specified');
+    }
+
     const [result] = await db.query(
       'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
       [username, email, password, role]

@@ -1,27 +1,28 @@
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const authRoutes = require("./routes/authRoutes");
-const dotenv=require('dotenv');
-dotenv.config();
-// const travelPackageRoutes = require("./routes/packageRoutes");
-// const bookingRoutes = require("./routes/bookingRoutes"); 
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const authRoutes = require('./routes/authRoutes');
+const packageRoutes = require('./routes/packageRoutes');
+const userRoutes = require('./routes/userRoutes');
+const errorHandler = require('./middleware/errorMiddleware');
 
 const app = express();
+
+// Middleware
 app.use(cors({
-  origin:process.env.FRONTEND_URL,
-  credentials:true,
-  methods:['GET',"POST","PATCH","PUT","DELETE"],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
 }));
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/auth", authRoutes);
-// app.use("/api/packages", travelPackageRoutes);
-// app.use("/api/bookings", bookingRoutes); 
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/packages', packageRoutes);
+app.use('/api/users', userRoutes);
 
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
- 
+// Error Handling Middleware
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

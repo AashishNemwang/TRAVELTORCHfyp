@@ -1,77 +1,208 @@
-// controllers/authController.js
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { validationResult } = require('express-validator');
 
-exports.register = async (req, res) => {
+// Register a new traveler
+exports.registerTraveler = async (req, res) => {
   try {
-    const { username, email, password, role } = req.body;
-
-    if (!username || !email || !password || !role) {
-      return res.status(400).json({ message: "All fields are required" });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    // Using await instead of callback
-    const existingUser = await User.findByEmail(email);
-    if (existingUser.length > 0) {
-      return res.status(400).json({ message: "Email already exists" });
-    }
-
-    const hash = await bcrypt.hash(password, 10);
-    await User.createUser({ username, email, password: hash, role });
+    const { username, email, password } = req.body;
     
-    res.status(201).json({ message: "User registered successfully" });
+    // Check if user exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create user
+    const user = new User({
+      username,
+      email,
+      password: hashedPassword,
+      role: 'traveler'
+    });
+
+    await user.save();
+
+    // Create token
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.status(201).json({ 
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      }
+    });
   } catch (err) {
-    console.error("Registration error:", err);
-    res.status(500).json({ message: err.message || "Registration failed" });
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
+// Register a new agency
+exports.registerAgency = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { username, email, password, agencyName } = req.body;
+    
+    // Check if user exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create user
+    const user = new User({
+      username,
+      email,
+      password: hashedPassword,
+      role: 'agency',
+      agencyName
+    });
+
+    await user.save();
+
+    // Create token
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.status(201).json({ 
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        agencyName: user.agencyName
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Register admin (protected route)
+exports.registerAdmin = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { username, email, password } = req.body;
+    
+    // Check if user exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create user
+    const user = new User({
+      username,
+      email,
+      password: hashedPassword,
+      role: 'admin'
+    });
+
+    await user.save();
+
+    res.status(201).json({ message: "Admin registered successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// User login
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const users = await User.findByEmail(email);
-    
-    if (users.length === 0) {
-      return res.status(401).json({ message: "Invalid email or password" });
+
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const user = users[0];
+    // Check password
     const isMatch = await bcrypt.compare(password, user.password);
-    
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({user:user}, process.env.JWT_SECRET, {
-      expiresIn: "1h" 
-    });
+    // Create token
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    // Prepare user data to return
+    const userData = {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      role: user.role
+    };
+
+    if (user.role === 'agency') {
+      userData.agencyName = user.agencyName;
+    }
 
     res.json({ 
-      token, 
-      user: { id: user.id, username: user.username, role: user.role } 
+      token,
+      user: userData
     });
   } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({ message: err.message || "Login failed" });
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-exports.getTheLoginedUser=async(req,res)=>{
-try{
-  const {token}=req.body;
-  //console.log(token);
-  const userData=await jwt.verify(token,process.env.JWT_SECRET);
-  if(userData){
-    return res.status(200).json({message:"user found",user:userData});
+// Get logged in user data
+exports.getLoggedInUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
-  return res.status(200).json({message:"user found",user:userData});
-
-}
-catch(error){
-
-  console.log(error);
-  return res.status(200).json({message:'no user is logined.',error:error?.message})
-}
-}
+};
 
