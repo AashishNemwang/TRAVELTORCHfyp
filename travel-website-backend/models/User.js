@@ -1,24 +1,29 @@
-const db = require('../config/db');
+const pool = require('../config/db');
 
-module.exports = {
-  findByEmail: async (email) => {
-    const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-    return rows;
-  },
-  
-  createUser: async (userData) => {
-    const { username, email, password, role = 'traveler' } = userData;
-    const validRoles = ['traveler', 'agency', 'admin'];
-    
-    if (!validRoles.includes(role)) {
-      throw new Error('Invalid user role specified');
-    }
-
-    const [result] = await db.query(
-      'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
-      [username, email, password, role]
+class User {
+  static async create({ username, email, password, role, agencyName = null }) {
+    const [result] = await pool.execute(
+      'INSERT INTO users (username, email, password, role, agency_name) VALUES (?, ?, ?, ?, ?)',
+      [username, email, password, role, agencyName]
     );
-    return result;
+    return result.insertId;
   }
-};
 
+  static async findByEmail(email) {
+    const [rows] = await pool.execute(
+      'SELECT * FROM users WHERE email = ?',
+      [email]
+    );
+    return rows[0];
+  }
+
+  static async findById(id) {
+    const [rows] = await pool.execute(
+      'SELECT id, username, email, role, agency_name FROM users WHERE id = ?',
+      [id]
+    );
+    return rows[0];
+  }
+}
+
+module.exports = User;

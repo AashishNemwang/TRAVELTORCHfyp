@@ -1,47 +1,33 @@
-const express = require("express");
-const router = express.Router();
-const packageController = require("../controllers/packageController");
-const { verifyToken, checkAgencyRole } = require("../middleware/authMiddleware");
-const multer = require("multer");
+// controllers/packageController.js
+const Package = require('../models/Package');
 
-// Configure Multer
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/')
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname)
+const getAllPackages = async (req, res) => {
+  try {
+    const packages = await Package.findAll();
+    res.json(packages);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
-});
+};
 
-const upload = multer({ storage: storage });
+const getPackageById = async (req, res) => {
+  try {
+    const package = await Package.findById(req.params.id);
+    if (!package) {
+      return res.status(404).json({ message: 'Package not found' });
+    }
+    res.json(package);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-// Public routes
-router.get("/", packageController.getAllPackages);
-router.get("/:id", packageController.getPackageById);
+// Add other controller functions...
 
-// Protected routes
-router.post(
-  "/",
-  verifyToken,
-  checkAgencyRole,
-  upload.single('photo'), // Add Multer middleware here
-  packageController.addPackage
-);
-
-router.put(
-  "/:id",
-  verifyToken,
-  checkAgencyRole,
-  upload.single('photo'), // Also for updates
-  packageController.updatePackage
-);
-
-router.delete(
-  "/:id",
-  verifyToken,
-  checkAgencyRole,
-  packageController.deletePackage
-);
-
-module.exports = router;
+module.exports = {
+  getAllPackages,
+  getPackageById,
+  createPackage,
+  updatePackage,
+  deletePackage
+};

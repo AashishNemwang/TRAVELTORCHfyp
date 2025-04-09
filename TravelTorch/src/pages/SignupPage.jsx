@@ -109,6 +109,8 @@ const SignupPage = () => {
               >
                 <option value="traveler">Traveler</option>
                 <option value="agency">Travel Agency</option>
+                <option value="agency">Admin</option>
+
               </select>
             </div>
 

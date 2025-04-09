@@ -1,33 +1,41 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const authController = require("../controllers/authController");
-const { verifyAdmin } = require("../middleware/authMiddleware");
 const { check } = require('express-validator');
+const authController = require('../controllers/authController');
+const { verifyToken } = require('../middleware/authMiddleware');
 
-// Public routes
+// @route   POST api/auth/register/traveler
+// @desc    Register traveler
+// @access  Public
 router.post(
-  "/register/traveler",
+  '/register/traveler',
   [
     check('username', 'Username is required').not().isEmpty(),
     check('email', 'Please include a valid email').isEmail(),
-    check('password', 'Password must be 6 or more characters').isLength({ min: 6 })
+    check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 })
   ],
-  authController.registerTraveler
+  authController.register
 );
 
+// @route   POST api/auth/register/agency
+// @desc    Register agency
+// @access  Public
 router.post(
-  "/register/agency",
+  '/register/agency',
   [
     check('username', 'Username is required').not().isEmpty(),
     check('email', 'Please include a valid email').isEmail(),
-    check('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
+    check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 }),
     check('agencyName', 'Agency name is required').not().isEmpty()
   ],
-  authController.registerAgency
+  authController.register
 );
 
+// @route   POST api/auth/login
+// @desc    Login user
+// @access  Public
 router.post(
-  "/login",
+  '/login',
   [
     check('email', 'Please include a valid email').isEmail(),
     check('password', 'Password is required').exists()
@@ -35,20 +43,9 @@ router.post(
   authController.login
 );
 
-// Protected admin route
-router.post(
-  "/register/admin",
-  [
-    verifyAdmin,
-    check('username', 'Username is required').not().isEmpty(),
-    check('email', 'Please include a valid email').isEmail(),
-    check('password', 'Password must be 6 or more characters').isLength({ min: 6 })
-  ],
-  authController.registerAdmin
-);
-
-// Protected user route
-router.get("/me", authController.getLoggedInUser);
+// @route   GET api/auth/me
+// @desc    Get current user
+// @access  Private
+router.get('/me', verifyToken, authController.getCurrentUser);
 
 module.exports = router;
-

@@ -1,15 +1,15 @@
-const db = require('../config/db');
+const pool = require('../config/db');
 
 class Package {
-  static async addPackage({ name, description, date, price, photo, agency_id }) {
-    const [result] = await db.query(
-      'INSERT INTO packages (name, description, date, price, photo, agency_id) VALUES (?, ?, ?, ?, ?, ?)',
-      [name, description, date, price, photo, agency_id]
+  static async create({ name, description, location, date, price, photo, agencyId }) {
+    const [result] = await pool.execute(
+      'INSERT INTO packages (name, description, location, date, price, photo, agency_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [name, description, location, date, price, photo, agencyId]
     );
     return result.insertId;
   }
 
-  static async getAllPackages(filters = {}) {
+  static async findAll(filters = {}) {
     let query = 'SELECT * FROM packages WHERE 1=1';
     const params = [];
 
@@ -30,24 +30,30 @@ class Package {
       params.push(filters.agencyId);
     }
 
-    const [packages] = await db.query(query, params);
+    const [packages] = await pool.execute(query, params);
     return packages;
   }
 
-  static async getPackageById(id) {
-    const [packages] = await db.query('SELECT * FROM packages WHERE id = ?', [id]);
-    return packages[0] || null;
+  static async findById(id) {
+    const [rows] = await pool.execute(
+      'SELECT * FROM packages WHERE id = ?',
+      [id]
+    );
+    return rows[0];
   }
 
-  static async updatePackage(id, { name, description, date, price, photo }) {
-    await db.query(
-      'UPDATE packages SET name=?, description=?, date=?, price=?, photo=? WHERE id=?',
-      [name, description, date, price, photo, id]
+  static async update(id, { name, description, location, date, price, photo }) {
+    await pool.execute(
+      'UPDATE packages SET name = ?, description = ?, location = ?, date = ?, price = ?, photo = ? WHERE id = ?',
+      [name, description, location, date, price, photo, id]
     );
   }
 
-  static async deletePackage(id) {
-    await db.query('DELETE FROM packages WHERE id = ?', [id]);
+  static async delete(id) {
+    await pool.execute(
+      'DELETE FROM packages WHERE id = ?',
+      [id]
+    );
   }
 }
 
