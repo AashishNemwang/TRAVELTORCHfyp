@@ -45,7 +45,7 @@ const LandingPage = () => {
             TravelTorch
           </h1>
           <nav className="space-x-4 md:space-x-6 flex">
-            <a 
+            {/* <a 
               href="/destinations" 
               className="text-white hover:text-blue-300 transition-colors duration-300 font-medium"
             >
@@ -56,7 +56,7 @@ const LandingPage = () => {
               className="text-white hover:text-blue-300 transition-colors duration-300 font-medium"
             >
               Travel Packages
-            </a>
+            </a> */}
           </nav>
         </div>
       </header>
@@ -89,7 +89,7 @@ const LandingPage = () => {
             </button>
 
             <button 
-              onClick={() => navigate('/agencyDash')} 
+              onClick={() => navigate('/signup')} 
               onMouseEnter={() => setIsHoveredAgency(true)}
               onMouseLeave={() => setIsHoveredAgency(false)}
               className={`relative px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 overflow-hidden ${

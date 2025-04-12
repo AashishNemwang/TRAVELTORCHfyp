@@ -28,23 +28,24 @@ const TravHome = () => {
   const packages = [
     { id: 1, name: 'Jungle Safari', location: 'Chitwan National Park', type: 'Adventure', price: '$500', date: '2025-06-15', description: 'Explore the rich biodiversity with a 3-day jungle safari.', image: ChitwanImg },
     { id: 2, name: 'Pokhara Getaway', location: 'Pokhara', type: 'Sight-seeing', price: '$400', date: '2025-07-10', description: 'Enjoy serene lakes and breathtaking mountain views.', image: PokharaImg },
-    { id: 3, name: 'Everest Base Camp Trek', location: 'Mount Everest', type: 'Trek', price: '$1000', date: '2025-08-05', description: 'Experience the grandeur of the world’s tallest mountain.', image: EverestImg },
+    { id: 3, name: 'Everest Base Camp Trek', location: 'Mount Everest', type: 'Trek', price: '$1000', date: '2025-08-05', description: 'Experience the grandeur of the worlds tallest mountain.', image: EverestImg },
     { id: 4, name: 'Annapurna Circuit Trek', location: 'Annapurna', type: 'Trek', price: '$1200', date: '2025-09-12', description: 'Challenge yourself with this stunning high-altitude trek.', image: AnnapurnaImg },
     { id: 5, name: 'Spiritual Journey', location: 'Lumbini', type: 'Cultural', price: '$300', date: '2025-10-20', description: 'Visit the birthplace of Buddha and explore its serene monasteries.', image: LumbiniImg },
-    { id: 6, name: 'Rara Lake Escape', location: 'Rara National Park', type: 'Nature', price: '$600', date: '2025-11-08', description: 'Discover the pristine beauty of Nepal’s largest lake.', image: RaraImg },
+    { id: 6, name: 'Rara Lake Escape', location: 'Rara National Park', type: 'Nature', price: '$600', date: '2025-11-08', description: 'Discover the pristine beauty of Nepals largest lake.', image: RaraImg },
     { id: 7, name: 'Bhaktapur Heritage Walk', location: 'Bhaktapur', type: 'Cultural', price: '$250', date: '2025-12-15', description: 'Explore ancient temples and traditional Newari culture.', image: BhaktapurImg },
-    { id: 8, name: 'Langtang Valley Trek', location: 'Langtang', type: 'Trek', price: '$850', date: '2026-01-10', description: 'Immerse yourself in breathtaking Himalayan landscapes.', image: LangtangImg },
-    { id: 9, name: 'Mustang Adventure', location: 'Upper Mustang', type: 'Adventure', price: '$1500', date: '2026-02-05', description: 'Experience the mystique of the hidden kingdom of Mustang.', image: MustangImg },
-    { id: 10, name: 'Gosaikunda Pilgrimage', location: 'Gosaikunda', type: 'Spiritual', price: '$550', date: '2026-03-15', description: 'A sacred trek to a high-altitude alpine lake.', image: GosaikundaImg },
-    { id: 11, name: 'Tea Garden Tour', location: 'Ilam', type: 'Nature', price: '$350', date: '2026-04-20', description: 'Stroll through lush tea gardens and enjoy scenic landscapes.', image: IlamImg },
-    { id: 12, name: 'Ramayan Circuit Tour', location: 'Janakpur', type: 'Cultural', price: '$400', date: '2026-05-30', description: 'Explore the sacred land of Sita and its rich history.', image: JanakpurImg }
+    { id: 8, name: 'Ramayan Circuit Tour', location: 'Janakpur', type: 'Cultural', price: '$400', date: '2026-05-30', description: 'Explore the sacred land of Sita and its rich history.', image: JanakpurImg }
   ];
 
   const trendingDestinations = [
     { id: 1, name: 'Annapurna Base Camp', image: Trending1 },
     { id: 2, name: 'Boudhanath Stupa', image: Trending2 },
-    
     { id: 3, name: 'Phewa Lake', image: Trending3 },
+  ];
+
+  const blogPosts = [
+    { id: 1, title: 'Top 5 Trekking Routes in Nepal', excerpt: 'Discover the most breathtaking trekking routes that Nepal has to offer...', date: 'May 15, 2025' },
+    { id: 2, title: 'Cultural Heritage of Kathmandu Valley', excerpt: 'Explore the rich cultural heritage and ancient temples of Kathmandu...', date: 'April 28, 2025' },
+    { id: 3, title: 'Wildlife Adventures in Chitwan', excerpt: 'Everything you need to know about jungle safaris and wildlife spotting...', date: 'June 2, 2025' },
   ];
 
   const handleFilterChange = (e) => {
@@ -105,6 +106,7 @@ const TravHome = () => {
         </div>
       </section>
 
+      {/* Available Packages */}
       <section ref={packagesSectionRef} className="container mx-auto py-10 px-4">
         <h2 className="text-3xl font-bold text-center mb-6">Available Packages</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -125,6 +127,81 @@ const TravHome = () => {
         </div>
       </section>
 
+      {/* Contact Us Section */}
+      <section className="bg-gray-100 py-10 px-4">
+        <div className="container mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-6">Contact Us</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h3 className="text-xl font-semibold mb-4">Get in Touch</h3>
+              <p className="mb-4">Have questions about our packages or need help with your booking? Reach out to us!</p>
+              
+              <div className="space-y-3">
+                <p className="flex items-center">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  +977 9801234567
+                </p>
+                <p className="flex items-center">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  info@traveltornepal.com
+                </p>
+                <p className="flex items-center">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  Thamel, Kathmandu, Nepal
+                </p>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="text-xl font-semibold mb-4">Send Us a Message</h3>
+              <form className="space-y-4">
+                <div>
+                  <input type="text" placeholder="Your Name" className="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-green-500"/>
+                </div>
+                <div>
+                  <input type="email" placeholder="Your Email" className="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-green-500"/>
+                </div>
+                <div>
+                  <textarea placeholder="Your Message" rows="4" className="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-green-500"></textarea>
+                </div>
+                <button type="submit" className="bg-gray-600 text-white px-6 py-3 rounded hover:bg-gray-700 transition">Send Message</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Blog Section */}
+      <section className="container mx-auto py-10 px-4">
+        <h2 className="text-3xl font-bold text-center mb-6">Travel Blog</h2>
+        <p className="text-center mb-8 max-w-2xl mx-auto">Read our latest travel tips, destination guides, and adventure stories to inspire your next trip.</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {blogPosts.map((post) => (
+            <div key={post.id} className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2">{post.title}</h3>
+                <p className="text-gray-600 mb-4">{post.excerpt}</p>
+                <p className="text-gray-400 text-sm">{post.date}</p>
+                <button className="mt-4 text-green-600 hover:text-green-800 font-medium">Read More →</button>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div className="text-center mt-8">
+          <button className="bg-gray-600 text-white px-6 py-3 rounded hover:bg-gray-700 transition">
+            View All Blog Posts
+          </button>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-6 mt-10">
@@ -134,6 +211,7 @@ const TravHome = () => {
             <button onClick={() => navigate('/')} className="hover:text-gray-400">Home</button>
             <button onClick={scrollToPackages} className="hover:text-gray-400">Packages</button>
             <button onClick={() => navigate('/contact')} className="hover:text-gray-400">Contact</button>
+            <button onClick={() => navigate('/blog')} className="hover:text-gray-400">Blog</button>
             <Link to="/login" className="hover:text-gray-400">Login</Link>
           </div>
         </div>

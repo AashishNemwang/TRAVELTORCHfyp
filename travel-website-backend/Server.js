@@ -2,11 +2,17 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
+const authMiddleware = require('./middleware/authMiddleware');
+const cookieParser = require('cookie-parser');
+
+
+
 // const packageRoutes = require('./routes/packageRoutes');
 // const userRoutes = require('./routes/userRoutes');
 // const errorHandler = require('./middleware/errorMiddleware');
 
 const app = express();
+
 
 // Middleware
 app.use(cors({
@@ -15,6 +21,8 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(authMiddleware.authenticate);
 
 // Routes
 app.use('/api/auth', authRoutes);

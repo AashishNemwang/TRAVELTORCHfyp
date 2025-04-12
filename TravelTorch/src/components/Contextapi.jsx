@@ -7,8 +7,9 @@ export const getContext=()=>{
 
 function Contextapi({children }) {
     const [user,setUser]=useState(null);
+    const [count,setCount]=useState(0);
   return (
-    <useContextApi.Provider value={{user,setUser}}>
+    <useContextApi.Provider value={{user,setUser,count,setCount}}>
       {children}
     </useContextApi.Provider>
   )

@@ -19,11 +19,10 @@ import { getContext } from './components/Contextapi';
 
 const App = () => {
 
-  const {user,setUser}=getContext();
-  const token=localStorage.getItem('token');
+  const {user,setUser,count,setCount}=getContext();
   const getUser=async()=>{
     try{
-      const res=await axios.post("http://localhost:5000/api/auth/getLoginUser",{token:token},{withCredentials:true});
+      const res=await axios.get("http://localhost:5000/api/auth/loggedInUser",{withCredentials:true});
       if(res?.status===200){
         //console.log(res?.data?.user)
         setUser(res?.data?.user);
@@ -34,10 +33,10 @@ const App = () => {
     } 
   }
   useEffect(()=>{
-    if(token){
+    if(!user){
       getUser();
     }
-  },[user ]);
+  },[count,setCount]);
   return (
     <Router>
 
@@ -59,9 +58,9 @@ const App = () => {
 
         <Route path="/book/:packageId" element={<BookingPage />} />
         
-        <Route path="/my-bookings" element={<MyBookings />} />
+        <Route path="/mybookings" element={<MyBookings />} />
 
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/adminDashboard" element={<AdminDashboard />} />
 
         <Route path="/admin/blogs" element={<AdminBlogs />} />
 

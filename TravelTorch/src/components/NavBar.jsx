@@ -1,10 +1,23 @@
 import React from 'react'
 import { useNavigate,Link } from 'react-router-dom'
 import { getContext } from './Contextapi';
+import axios from 'axios';
+
 
 const NavBar = ({func=()=>{}}) => {
     const navigate=useNavigate();
    const {user,setUser}=getContext();
+   const handleLogout=async()=>{
+    try{
+    const response=await axios.delete('http://localhost:5000/api/auth/logout',{withCredentials:true});
+    if(response?.status===200){
+      setCount(1);
+      alert(response?.data?.message);
+    }
+    }catch(error){
+      alert(error?.response?.data?.message);
+    }
+   }
   return (
     <div>
       <nav className="fixed top-0 left-0 w-full bg-black bg-opacity-70 text-white py-4 shadow-md z-50">
@@ -18,6 +31,11 @@ const NavBar = ({func=()=>{}}) => {
              !user &&
             <Link to="/login" className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-white hover:text-gray-600
             ">Login</Link>
+            }
+            {
+             user &&
+            <button onClick={handleLogout} className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-white hover:text-gray-600
+            ">Log out</button>
             }
           </div>
         </div>
