@@ -3,6 +3,7 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 const { check } = require('express-validator');
 const getLoggedInUser = require('../controllers/getLoggedInUser');
+const authMiddleware = require('../middleware/authMiddleware');
 
 router.post('/signup', [
   check('username').notEmpty().withMessage('Username is required'),
@@ -18,5 +19,7 @@ router.post('/login', [
 
 router.get('/loggedInUser',getLoggedInUser);
 router.delete('/logout',authController.logout);
+
+router.get('/me',authMiddleware,authController.getCurrentUser);
 
 module.exports = router;

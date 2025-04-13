@@ -1,33 +1,23 @@
-// controllers/packageController.js
-const Package = require('../models/Package');
+const express = require('express');
+const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const { createPackage } = require('../controllers/packageController');
 
-const getAllPackages = async (req, res) => {
-  try {
-    const packages = await Package.findAll();
-    res.json(packages);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+// Setup multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    const uniqueName = Date.now() + '-' + file.originalname;
+    cb(null, uniqueName);
   }
-};
+});
 
-const getPackageById = async (req, res) => {
-  try {
-    const package = await Package.findById(req.params.id);
-    if (!package) {
-      return res.status(404).json({ message: 'Package not found' });
-    }
-    res.json(package);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+const upload = multer({ storage: storage });
 
-// Add other controller functions...
+// POST /api/packages
+router.post('/', upload.single('photo'), createPackage);
 
-module.exports = {
-  getAllPackages,
-  getPackageById,
-  createPackage,
-  updatePackage,
-  deletePackage
-};
+module.exports = router;

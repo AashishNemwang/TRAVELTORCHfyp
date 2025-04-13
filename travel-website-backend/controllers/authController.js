@@ -62,9 +62,9 @@ const authController = {
       // Set cookie with options
       res.cookie('token', token, {
         httpOnly: true,
-        secure: false, // set true in production (HTTPS)
+        secure: false, 
         sameSite: 'Lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+        maxAge: 7 * 24 * 60 * 60 * 1000 
       });
 
       return res.status(200).json({
@@ -92,7 +92,31 @@ const authController = {
     } catch (error) {
       return res.status(500).json({ message: 'Error on logout.' });
     }
+  },
+
+    async getCurrentUser(req, res) {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const user = await User.findById(req.user.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error" });
+    }
   }
+
 };
 
 module.exports = authController;

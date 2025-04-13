@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import LoginImage from '../assets/login.jpg'; // Make sure to have this image
+import LoginImage from '../assets/login.jpg'; 
 import axios from "axios";
 import { getContext } from '../components/Contextapi';
 
@@ -39,7 +39,7 @@ const LoginPage = () => {
       navigate('/travHome');
     }
     if(response?.data?.user?.role==='Agency'){
-      navigate('/agencyDashboard');
+      navigate('/agencyDash');
     }
     if(response?.data?.user?.role==='Admin'){
       navigate('/adminDashboard');

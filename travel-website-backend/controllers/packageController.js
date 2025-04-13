@@ -1,43 +1,49 @@
-const Package = require("../models/Package");
-const fs = require("fs");
-const path = require("path");
+const db = require('../db');
+const path = require('path');
 
-exports.addPackage = async (req, res) => {
-  try {
-    const { name, description, date, price } = req.body;
-    const agency_id = req.user.id; // From auth middleware
-    
-    if (!req.file) {
-      return res.status(400).json({ error: "Photo is required" });
-    }
+exports.createPackage = (req, res) => {
+  const {
+    name,
+    destination,
+    type,
+    price,
+    startDate,
+    endDate,
+    duration,
+    description
+  } = req.body;
 
-    const photo = req.file.filename;
+  const agency_id = req.user?.id || 1; // default to 1 if not using authentication
 
-    // Validate input
-    if (!name || !description || !date || !price) {
-      // Clean up uploaded file if validation fails
-      fs.unlinkSync(req.file.path);
-      return res.status(400).json({ error: "All fields are required" });
-    }
+  const photo = req.file ? req.file.filename : null;
 
-    const newPackage = await Package.addPackage({
-      name,
-      description,
-      date,
-      price,
-      photo,
-      agency_id
-    });
-
-    res.status(201).json({
-      success: true,
-      package: newPackage
-    });
-  } catch (error) {
-    // Clean up file if error occurs
-    if (req.file) {
-      fs.unlinkSync(req.file.path);
-    }
-    res.status(500).json({ error: error.message });
+  if (!photo) {
+    return res.status(400).json({ message: 'Image is required' });
   }
+
+  const sql = `
+    INSERT INTO travel_package
+    (name, destination, type, price, startDate, endDate, duration, description, photo, agency_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  db.query(sql, [
+    name,
+    destination,
+    type,
+    price,
+    startDate,
+    endDate,
+    duration,
+    description,
+    photo,
+    agency_id
+  ], (err, result) => {
+    if (err) {
+      console.error('Error inserting package:', err);
+      return res.status(500).json({ message: 'Failed to create package' });
+    }
+
+    return res.status(201).json({ message: 'Package created successfully' });
+  });
 };

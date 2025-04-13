@@ -1,81 +1,63 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { verifyAdmin } = require("../middleware/authMiddleware");
-const db = require("../config/db");
+const db = require('../db');
 
-// ✅ Protect all admin routes
-router.use(verifyAdmin);
-
-// ✅ Admin Dashboard Overview
-router.get("/dashboard", (req, res) => {
-  res.json({ message: "Welcome to the Admin Dashboard!" });
+// Get all users with role traveler
+router.get('/travelers', async (req, res) => {
+  const [rows] = await db.query("SELECT * FROM users WHERE role = 'traveler'");
+  res.json(rows);
 });
 
-// ✅ Get All Users
-router.get("/users", (req, res) => {
-  const query = "SELECT id, username, email, role FROM users";
-  db.query(query, (err, results) => {
-    if (err) return res.status(500).json({ message: "Error fetching users" });
-    res.json(results);
-  });
+// Get all users with role agency
+router.get('/agencies', async (req, res) => {
+  const [rows] = await db.query("SELECT * FROM users WHERE role = 'agency'");
+  res.json(rows);
 });
 
-// ✅ Delete User by ID
-router.delete("/users/:id", (req, res) => {
+// Get all travel packages
+router.get('/packages', async (req, res) => {
+  const [rows] = await db.query("SELECT * FROM travel_package");
+  res.json(rows);
+});
+
+// Get all reviews
+router.get('/reviews', async (req, res) => {
+  const [rows] = await db.query("SELECT * FROM reviews");
+  res.json(rows);
+});
+
+// Get all blogs
+router.get('/blogs', async (req, res) => {
+  const [rows] = await db.query("SELECT * FROM blogs");
+  res.json(rows);
+});
+
+// Add a blog
+router.post('/blogs', async (req, res) => {
+  const { title, content, image } = req.body;
+  const [result] = await db.query(
+    "INSERT INTO blogs (title, content, image, created_at) VALUES (?, ?, ?, NOW())",
+    [title, content, image]
+  );
+  res.json({ id: result.insertId });
+});
+
+// Update a blog
+router.put('/blogs/:id', async (req, res) => {
   const { id } = req.params;
-  const query = "DELETE FROM users WHERE id = ?";
-  db.query(query, [id], (err) => {
-    if (err) return res.status(500).json({ message: "Error deleting user" });
-    res.json({ message: "User deleted successfully" });
-  });
+  const { title, content, image } = req.body;
+  await db.query(
+    "UPDATE blogs SET title = ?, content = ?, image = ? WHERE id = ?",
+    [title, content, image, id]
+  );
+  res.sendStatus(200);
 });
 
-// ✅ Get All Blogs
-router.get("/blogs", (req, res) => {
-  const query = "SELECT * FROM blogs";
-  db.query(query, (err, results) => {
-    if (err) return res.status(500).json({ message: "Error fetching blogs" });
-    res.json(results);
-  });
-});
-
-// ✅ Add a New Blog
-router.post("/blogs", (req, res) => {
-  const { title, content } = req.body;
-  if (!title || !content) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-
-  const query = "INSERT INTO blogs (title, content) VALUES (?, ?)";
-  db.query(query, [title, content], (err) => {
-    if (err) return res.status(500).json({ message: "Error adding blog" });
-    res.status(201).json({ message: "Blog added successfully" });
-  });
-});
-
-// ✅ Update a Blog by ID
-router.put("/blogs/:id", (req, res) => {
+// Delete a blog
+router.delete('/blogs/:id', async (req, res) => {
   const { id } = req.params;
-  const { title, content } = req.body;
-  if (!title || !content) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-
-  const query = "UPDATE blogs SET title = ?, content = ? WHERE id = ?";
-  db.query(query, [title, content, id], (err) => {
-    if (err) return res.status(500).json({ message: "Error updating blog" });
-    res.json({ message: "Blog updated successfully" });
-  });
-});
-
-// ✅ Delete a Blog by ID
-router.delete("/blogs/:id", (req, res) => {
-  const { id } = req.params;
-  const query = "DELETE FROM blogs WHERE id = ?";
-  db.query(query, [id], (err) => {
-    if (err) return res.status(500).json({ message: "Error deleting blog" });
-    res.json({ message: "Blog deleted successfully" });
-  });
+  await db.query("DELETE FROM blogs WHERE id = ?", [id]);
+  res.sendStatus(200);
 });
 
 module.exports = router;

@@ -13,10 +13,6 @@ import AnnapurnaImg from '../assets/Annapurna.jpg';
 import LumbiniImg from '../assets/Lumbini.jpg';
 import RaraImg from '../assets/Rara.jpg';
 import BhaktapurImg from '../assets/Bhaktapur.jpg';
-import LangtangImg from '../assets/Lamtang.jpg';
-import MustangImg from '../assets/Mustang.jpg';
-import GosaikundaImg from '../assets/Gosaikunda.jpg';
-import IlamImg from '../assets/Illam.jpg';
 import JanakpurImg from '../assets/Janakpur.jpg';
 import NavBar from '../components/NavBar';
 

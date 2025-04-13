@@ -13,6 +13,7 @@ import TravelerBlogs from "./pages/TravelerBlogs";
 import BlogDetails from "./pages/BlogDetails";
 import axios from 'axios';
 import { getContext } from './components/Contextapi';
+import CreatePackage from './pages/CreatePackage';
 
 
 
@@ -47,7 +48,7 @@ const App = () => {
         {/* Traveler Home */}
         <Route path="/travhome" element={<TravHome />} /> 
 
-        <Route path="/AgencyDash" element={<AgencyDash />} />
+        <Route path="/agencyDash" element={<AgencyDash />} />
 
 
         {/* Signup Page */}
@@ -57,6 +58,8 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
 
         <Route path="/book/:packageId" element={<BookingPage />} />
+
+        <Route path="/createPackage" element={<CreatePackage/>} />
         
         <Route path="/mybookings" element={<MyBookings />} />
 
