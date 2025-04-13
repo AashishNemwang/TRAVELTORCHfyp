@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const CreatePackage = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     destination: '',
-    type: 'adventure', // default value
+    type: 'Adventure',
     price: '',
     startDate: '',
     endDate: '',
@@ -16,305 +14,308 @@ const CreatePackage = () => {
     description: '',
     photo: null
   });
-  const [previewImage, setPreviewImage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [preview, setPreview] = useState('');
 
-  const packageTypes = [
-    'adventure',
-    'beach',
-    'cultural',
-    'cruise',
-    'family',
-    'honeymoon',
-    'luxury',
-    'wildlife'
-  ];
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e) => {
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData(prev => ({
-        ...prev,
-        photo: file
-      }));
+      // Validate file type and size
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!validTypes.includes(file.type)) {
+        setError('Please upload a valid image (JPEG, PNG, GIF)');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size should be less than 5MB');
+        return;
+      }
 
+      setFormData(prev => ({ ...prev, photo: file }));
+      setError('');
+      
       // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreviewImage(reader.result);
+        setPreview(reader.result);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const calculateDuration = () => {
-    if (formData.startDate && formData.endDate) {
-      const start = new Date(formData.startDate);
-      const end = new Date(formData.endDate);
-      const diffTime = Math.abs(end - start);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-      setFormData(prev => ({
-        ...prev,
-        duration: diffDays.toString()
-      }));
+  const validateForm = () => {
+    if (!formData.name.trim()) return 'Package name is required';
+    if (!formData.destination.trim()) return 'Destination is required';
+    if (!formData.price || isNaN(formData.price)) return 'Valid price is required';
+    if (!formData.startDate) return 'Start date is required';
+    if (!formData.endDate) return 'End date is required';
+    if (new Date(formData.endDate) < new Date(formData.startDate)) {
+      return 'End date must be after start date';
     }
+    if (!formData.duration.trim()) return 'Duration is required';
+    if (!formData.description.trim()) return 'Description is required';
+    if (!formData.photo) return 'Package image is required';
+    return '';
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setIsSubmitting(true);
+    setError('');
+
+    const data = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== null) data.append(key, value);
+    });
 
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('destination', formData.destination);
-      formDataToSend.append('type', formData.type);
-      formDataToSend.append('price', formData.price);
-      formDataToSend.append('startDate', formData.startDate);
-      formDataToSend.append('endDate', formData.endDate);
-      formDataToSend.append('duration', formData.duration);
-      formDataToSend.append('description', formData.description);
-      if (formData.photo) {
-        formDataToSend.append('photo', formData.photo);
-      }
-
-      const response = await axios.post(
-        'http://localhost:5000/api/packages',
-        formDataToSend,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          },
-          withCredentials: true
-        }
-      );
-
-      toast.success('Package created successfully!');
-      navigate('/agency-dashboard');
-    } catch (error) {
-      console.error('Error creating package:', error);
-      toast.error(error.response?.data?.message || 'Failed to create package');
+      await axios.post('http://localhost:5000/api/packages', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        withCredentials: true,
+      });
+      navigate('/agencyDash', { state: { success: 'Package created successfully!' } });
+    } catch (err) {
+      console.error("Error creating package:", err);
+      setError(err.response?.data?.message || 'Failed to create package. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleBack = () => {
+    navigate('/agencyDash');
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Create New Travel Package</h1>
-          <button
-            onClick={() => navigate('/agency-dashboard')}
-            className="text-sm text-gray-600 hover:text-gray-800"
-          >
-            Back to Dashboard
-          </button>
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-extrabold text-gray-900">Create New Travel Package</h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Fill out the form below to create an exciting new travel package for your customers
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Package Name */}
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                Package Name *
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            {/* Destination */}
-            <div>
-              <label htmlFor="destination" className="block text-sm font-medium text-gray-700 mb-1">
-                Destination *
-              </label>
-              <input
-                type="text"
-                id="destination"
-                name="destination"
-                value={formData.destination}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            {/* Package Type */}
-            <div>
-              <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
-                Package Type *
-              </label>
-              <select
-                id="type"
-                name="type"
-                value={formData.type}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              >
-                {packageTypes.map(type => (
-                  <option key={type} value={type}>
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Price */}
-            <div>
-              <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
-                Price (USD) *
-              </label>
-              <div className="relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-gray-500 sm:text-sm">$</span>
+        <div className="bg-white shadow rounded-lg p-8">
+          {error && (
+            <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
                 </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                  Package Name *
+                </label>
                 <input
-                  type="number"
-                  id="price"
-                  name="price"
-                  value={formData.price}
+                  type="text"
+                  name="name"
+                  id="name"
+                  placeholder="e.g. Amazon Jungle Adventure"
+                  value={formData.name}
                   onChange={handleChange}
-                  min="0"
-                  step="0.01"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   required
-                  className="block w-full pl-7 pr-12 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
-            </div>
 
-            {/* Start Date */}
-            <div>
-              <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
-                Start Date *
-              </label>
-              <input
-                type="date"
-                id="startDate"
-                name="startDate"
-                value={formData.startDate}
-                onChange={handleChange}
-                onBlur={calculateDuration}
-                min={new Date().toISOString().split('T')[0]}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            {/* End Date */}
-            <div>
-              <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
-                End Date *
-              </label>
-              <input
-                type="date"
-                id="endDate"
-                name="endDate"
-                value={formData.endDate}
-                onChange={handleChange}
-                onBlur={calculateDuration}
-                min={formData.startDate || new Date().toISOString().split('T')[0]}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            {/* Duration (auto-calculated) */}
-            <div>
-              <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-1">
-                Duration (days) *
-              </label>
-              <input
-                type="number"
-                id="duration"
-                name="duration"
-                value={formData.duration}
-                onChange={handleChange}
-                required
-                readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-          </div>
-
-          {/* Description */}
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-              Description *
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              rows="4"
-              value={formData.description}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          {/* Image Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Package Image *
-            </label>
-            <div className="mt-1 flex items-center">
-              <label className="inline-block cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                {formData.photo ? 'Change Image' : 'Upload Image'}
+              <div>
+                <label htmlFor="destination" className="block text-sm font-medium text-gray-700">
+                  Destination *
+                </label>
                 <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="sr-only"
+                  type="text"
+                  name="destination"
+                  id="destination"
+                  placeholder="e.g. Manaus, Brazil"
+                  value={formData.destination}
+                  onChange={handleChange}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
-              </label>
-              {formData.photo && (
-                <span className="ml-2 text-sm text-gray-500">{formData.photo.name}</span>
-              )}
-            </div>
-            {previewImage && (
-              <div className="mt-2">
-                <img
-                  src={previewImage}
-                  alt="Preview"
-                  className="h-32 w-auto object-cover rounded"
+              </div>
+
+              <div>
+                <label htmlFor="type" className="block text-sm font-medium text-gray-700">
+                  Package Type *
+                </label>
+                <select
+                  name="type"
+                  id="type"
+                  value={formData.type}
+                  onChange={handleChange}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  required
+                >
+                  <option value="Adventure">Adventure</option>
+                  <option value="Culture">Culture</option>
+                  <option value="Wildlife">Wildlife</option> 
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="price" className="block text-sm font-medium text-gray-700">
+                  Price (USD) *
+                </label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span className="text-gray-500 sm:text-sm">$</span>
+                  </div>
+                  <input
+                    type="number"
+                    name="price"
+                    id="price"
+                    placeholder="0.00"
+                    value={formData.price}
+                    onChange={handleChange}
+                    className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md py-2 px-3"
+                    required
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
+                  Start Date *
+                </label>
+                <input
+                  type="date"
+                  name="startDate"
+                  id="startDate"
+                  value={formData.startDate}
+                  onChange={handleChange}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  required
                 />
               </div>
-            )}
-            <p className="mt-1 text-xs text-gray-500">
-              Upload a high-quality image that represents your package (JPEG, PNG)
-            </p>
-          </div>
 
-          {/* Submit Button */}
-          <div className="pt-4">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-                isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
-              }`}
-            >
-              {isSubmitting ? 'Creating Package...' : 'Create Package'}
-            </button>
-          </div>
-        </form>
+              <div>
+                <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">
+                  End Date *
+                </label>
+                <input
+                  type="date"
+                  name="endDate"
+                  id="endDate"
+                  value={formData.endDate}
+                  onChange={handleChange}
+                  min={formData.startDate}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="duration" className="block text-sm font-medium text-gray-700">
+                  Duration *
+                </label>
+                <input
+                  type="text"
+                  name="duration"
+                  id="duration"
+                  placeholder="e.g. 7 days / 6 nights"
+                  value={formData.duration}
+                  onChange={handleChange}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="photo" className="block text-sm font-medium text-gray-700">
+                  Package Image *
+                </label>
+                <div className="mt-1 flex items-center">
+                  <input
+                    type="file"
+                    name="photo"
+                    id="photo"
+                    onChange={handleFileChange}
+                    className="focus:ring-blue-500 focus:border-blue-500 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    accept="image/*"
+                    required
+                  />
+                </div>
+                {preview && (
+                  <div className="mt-2">
+                    <img src={preview} alt="Preview" className="h-40 object-cover rounded-md" />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                Package Description *
+              </label>
+              <textarea
+                name="description"
+                id="description"
+                rows={5}
+                placeholder="Describe the package in detail..."
+                value={formData.description}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                required
+              />
+            </div>
+
+            <div className="flex justify-between">
+              <button
+                type="button"
+                onClick={handleBack}
+                className="inline-flex justify-center py-3 px-6 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Back to Dashboard
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''}`}
+              >
+                {isSubmitting ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Creating...
+                  </>
+                ) : 'Create Package'}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

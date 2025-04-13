@@ -1,48 +1,51 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import NavBar from '../components/NavBar';
 
-// Import Images
-import ChitwanImg from '../assets/Chitwan.jpg';
-import PokharaImg from '../assets/Pokhara.jpg';
-import EverestImg from '../assets/MountEverest.jpg';
+// Import Images (keep only the ones used for UI elements)
 import HeroImg from '../assets/pakHero.jpg';
 import Trending1 from '../assets/trending1.jpg';
 import Trending2 from '../assets/trending2.jpg';
 import Trending3 from '../assets/trending3.jpg';
-import AnnapurnaImg from '../assets/Annapurna.jpg';
-import LumbiniImg from '../assets/Lumbini.jpg';
-import RaraImg from '../assets/Rara.jpg';
-import BhaktapurImg from '../assets/Bhaktapur.jpg';
-import JanakpurImg from '../assets/Janakpur.jpg';
-import NavBar from '../components/NavBar';
 
 const TravHome = () => {
   const [filters, setFilters] = useState({ destination: '', date: '', category: '' });
+  const [packages, setPackages] = useState([]);
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const packagesSectionRef = useRef(null);
   const navigate = useNavigate();
 
-  const packages = [
-    { id: 1, name: 'Jungle Safari', location: 'Chitwan National Park', type: 'Adventure', price: '$500', date: '2025-06-15', description: 'Explore the rich biodiversity with a 3-day jungle safari.', image: ChitwanImg },
-    { id: 2, name: 'Pokhara Getaway', location: 'Pokhara', type: 'Sight-seeing', price: '$400', date: '2025-07-10', description: 'Enjoy serene lakes and breathtaking mountain views.', image: PokharaImg },
-    { id: 3, name: 'Everest Base Camp Trek', location: 'Mount Everest', type: 'Trek', price: '$1000', date: '2025-08-05', description: 'Experience the grandeur of the worlds tallest mountain.', image: EverestImg },
-    { id: 4, name: 'Annapurna Circuit Trek', location: 'Annapurna', type: 'Trek', price: '$1200', date: '2025-09-12', description: 'Challenge yourself with this stunning high-altitude trek.', image: AnnapurnaImg },
-    { id: 5, name: 'Spiritual Journey', location: 'Lumbini', type: 'Cultural', price: '$300', date: '2025-10-20', description: 'Visit the birthplace of Buddha and explore its serene monasteries.', image: LumbiniImg },
-    { id: 6, name: 'Rara Lake Escape', location: 'Rara National Park', type: 'Nature', price: '$600', date: '2025-11-08', description: 'Discover the pristine beauty of Nepals largest lake.', image: RaraImg },
-    { id: 7, name: 'Bhaktapur Heritage Walk', location: 'Bhaktapur', type: 'Cultural', price: '$250', date: '2025-12-15', description: 'Explore ancient temples and traditional Newari culture.', image: BhaktapurImg },
-    { id: 8, name: 'Ramayan Circuit Tour', location: 'Janakpur', type: 'Cultural', price: '$400', date: '2026-05-30', description: 'Explore the sacred land of Sita and its rich history.', image: JanakpurImg }
-  ];
-
+  // Trending destinations (could also be fetched from API)
   const trendingDestinations = [
     { id: 1, name: 'Annapurna Base Camp', image: Trending1 },
     { id: 2, name: 'Boudhanath Stupa', image: Trending2 },
     { id: 3, name: 'Phewa Lake', image: Trending3 },
   ];
 
-  const blogPosts = [
-    { id: 1, title: 'Top 5 Trekking Routes in Nepal', excerpt: 'Discover the most breathtaking trekking routes that Nepal has to offer...', date: 'May 15, 2025' },
-    { id: 2, title: 'Cultural Heritage of Kathmandu Valley', excerpt: 'Explore the rich cultural heritage and ancient temples of Kathmandu...', date: 'April 28, 2025' },
-    { id: 3, title: 'Wildlife Adventures in Chitwan', excerpt: 'Everything you need to know about jungle safaris and wildlife spotting...', date: 'June 2, 2025' },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch packages
+        const packagesResponse = await axios.get('http://localhost:5000/api/packages');
+        setPackages(packagesResponse.data);
+
+        // Fetch blog posts
+        const blogsResponse = await axios.get('http://localhost:5000/api/blogs');
+        setBlogPosts(blogsResponse.data);
+
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError("Failed to load data. Please try again later.");
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleFilterChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
@@ -51,6 +54,22 @@ const TravHome = () => {
   const scrollToPackages = () => {
     packagesSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-red-500 text-xl">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -78,9 +97,12 @@ const TravHome = () => {
               onChange={handleFilterChange} 
               className="border border-gray-300 p-3 rounded w-40 focus:ring-2 focus:ring-green-500 text-gray-900"
             >
-              <option value="adventure">Adventure</option>
-              <option value="trek">Trek</option>
-              <option value="sight-seeing">Sight-seeing</option>
+              <option value="">All Categories</option>
+              <option value="Adventure">Adventure</option>
+              <option value="Trek">Trek</option>
+              <option value="Sight-seeing">Sight-seeing</option>
+              <option value="Cultural">Cultural</option>
+              <option value="Nature">Nature</option>
             </select>
             <button className="bg-gray-600 text-white px-6 py-3 rounded-xl hover:bg-white hover:text-gray-600">Search</button>
           </div>
@@ -108,14 +130,22 @@ const TravHome = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {packages.map((pkg) => (
             <div key={pkg.id} className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow">
-              <img src={pkg.image} alt={pkg.name} className="w-full h-48 object-cover"/>
+              <img 
+                src={`http://localhost:5000/uploads/${pkg.photo}`} 
+                alt={pkg.name} 
+                className="w-full h-48 object-cover"
+                onError={(e) => {
+                  e.target.onerror = null; 
+                  e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
+                }}
+              />
               <div className="p-4">
                 <h3 className="text-xl font-bold">{pkg.name}</h3>
-                <p className="text-gray-700"><strong>Location:</strong> {pkg.location}</p>
+                <p className="text-gray-700"><strong>Location:</strong> {pkg.destination}</p>
                 <p className="text-gray-700"><strong>Type:</strong> {pkg.type}</p>
                 <p className="text-gray-700">{pkg.description}</p>
-                <p className="text-gray-400 font-bold mt-4"><strong>Price:</strong> {pkg.price}</p>
-                <p className="text-gray-400 font-bold"><strong>Date:</strong> {pkg.date}</p>
+                <p className="text-gray-400 font-bold mt-4"><strong>Price:</strong> ${pkg.price}</p>
+                <p className="text-gray-400 font-bold"><strong>Date:</strong> {new Date(pkg.startDate).toLocaleDateString()} - {new Date(pkg.endDate).toLocaleDateString()}</p>
                 <Link to={`/package/${pkg.id}`} className="inline-block bg-gray-600 text-white text-center px-4 py-2 mt-4 rounded hover:bg-gray-200 hover:text-gray-700 transition">Book Now</Link>
               </div>
             </div>
@@ -184,18 +214,18 @@ const TravHome = () => {
             <div key={post.id} className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
               <div className="p-6">
                 <h3 className="text-xl font-bold mb-2">{post.title}</h3>
-                <p className="text-gray-600 mb-4">{post.excerpt}</p>
-                <p className="text-gray-400 text-sm">{post.date}</p>
-                <button className="mt-4 text-green-600 hover:text-green-800 font-medium">Read More →</button>
+                <p className="text-gray-600 mb-4">{post.excerpt || post.content.substring(0, 100)}...</p>
+                <p className="text-gray-400 text-sm">{new Date(post.createdAt).toLocaleDateString()}</p>
+                <Link to={`/blog/${post.id}`} className="mt-4 text-green-600 hover:text-green-800 font-medium inline-block">Read More →</Link>
               </div>
             </div>
           ))}
         </div>
         
         <div className="text-center mt-8">
-          <button className="bg-gray-600 text-white px-6 py-3 rounded hover:bg-gray-700 transition">
+          <Link to="/blog" className="bg-gray-600 text-white px-6 py-3 rounded hover:bg-gray-700 transition">
             View All Blog Posts
-          </button>
+          </Link>
         </div>
       </section>
 

@@ -20,6 +20,6 @@ router.post('/login', [
 router.get('/loggedInUser',getLoggedInUser);
 router.delete('/logout',authController.logout);
 
-router.get('/me',authMiddleware,authController.getCurrentUser);
+// router.get('/me',authMiddleware,authController.getCurrentUser);
 
 module.exports = router;
