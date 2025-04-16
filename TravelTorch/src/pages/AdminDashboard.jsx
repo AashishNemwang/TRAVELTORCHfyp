@@ -3,30 +3,27 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('users');
-  const [data, setData] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchData();
-  }, [activeTab]);
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/admin/users', {
+          withCredentials: true
+        });
+        setUsers(response.data);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to fetch users');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`http://localhost:5000/admin/${activeTab}`, {
-        withCredentials: true,
-      });
-      setData(response.data);
-      setLoading(false);
-    } catch (err) {
-      setError("Failed to fetch data. Check console for details.");
-      setLoading(false);
-      console.error(err);
-    }
-  };
+    fetchUsers();
+  }, []);
 
   if (loading) {
     return (
@@ -39,67 +36,50 @@ const AdminDashboard = () => {
   if (error) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-red-500">{error}</p>
+        <div className="text-red-500 text-xl">{error}</div>
+        <button 
+          onClick={() => window.location.reload()}
+          className="ml-4 bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Retry
+        </button>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-6">User Management</h1>
       
-      {/* Tabs */}
-      <div className="flex space-x-4 mb-6">
-        <button
-          onClick={() => setActiveTab('users')}
-          className={`px-4 py-2 rounded-lg ${activeTab === 'users' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-        >
-          Users
-        </button>
-        <button
-          onClick={() => setActiveTab('packages')}
-          className={`px-4 py-2 rounded-lg ${activeTab === 'packages' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-        >
-          Packages
-        </button>
-        <button
-          onClick={() => setActiveTab('blogs')}
-          className={`px-4 py-2 rounded-lg ${activeTab === 'blogs' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-        >
-          Blogs
-        </button>
-        <button
-          onClick={() => setActiveTab('reviews')}
-          className={`px-4 py-2 rounded-lg ${activeTab === 'reviews' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-        >
-          Reviews
-        </button>
-      </div>
-
-      {/* Data Table */}
       <div className="bg-white rounded-lg shadow-md p-4">
-        {data.length === 0 ? (
-          <p>No data found.</p>
+        {users.length === 0 ? (
+          <p>No users found.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white">
-              <thead>
-                <tr className="bg-gray-200">
-                  {Object.keys(data[0]).map((key) => (
-                    <th key={key} className="py-2 px-4 text-left">
-                      {key}
-                    </th>
-                  ))}
+              <thead className="bg-gray-200">
+                <tr>
+                  <th className="py-3 px-4 text-left">ID</th>
+                  <th className="py-3 px-4 text-left">Username</th>
+                  <th className="py-3 px-4 text-left">Email</th>
+                  <th className="py-3 px-4 text-left">Role</th>
                 </tr>
               </thead>
               <tbody>
-                {data.map((item, index) => (
-                  <tr key={index} className="border-b">
-                    {Object.values(item).map((value, i) => (
-                      <td key={i} className="py-2 px-4">
-                        {typeof value === 'string' || typeof value === 'number' ? value : JSON.stringify(value)}
-                      </td>
-                    ))}
+                {users.map((user) => (
+                  <tr key={user.id} className="border-b hover:bg-gray-50">
+                    <td className="py-3 px-4">{user.id}</td>
+                    <td className="py-3 px-4">{user.username}</td>
+                    <td className="py-3 px-4">{user.email}</td>
+                    <td className="py-3 px-4">
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        user.role === 'admin' 
+                          ? 'bg-blue-100 text-blue-800' 
+                          : 'bg-green-100 text-green-800'
+                      }`}>
+                        {user.role}
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
