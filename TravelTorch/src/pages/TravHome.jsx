@@ -7,6 +7,7 @@ import TrendingDestinations from './TrendingDestinations';
 import PackageList from './PackageList';
 import ContactSection from './ContactSection';
 import BlogSection from './BlogSection';
+import Footer from './Footer';
 
 const TravHome = () => {
   const [filters, setFilters] = useState({ destination: '', date: '', category: '' });
@@ -24,37 +25,38 @@ const TravHome = () => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
   };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const [pkgRes, blogRes] = await Promise.all([
-  //         axios.get('http://localhost:5000/api/packages'),
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [pkgRes, blogRes] = await Promise.all([
+          axios.get('http://localhost:5000/api/packages')
   //         axios.get('http://localhost:5000/api/blogs'),
-  //       ]);
-  //       setPackages(pkgRes.data);
+        ]);
+        setPackages(pkgRes.data);
   //       setBlogPosts(blogRes.data);
-  //       setLoading(false);
-  //     } catch (err) {
-  //       setError('Failed to load data.');
-  //       setLoading(false);
-  //     }
-  //   };
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to load data.');
+        setLoading(false);
+      }
+    };
 
-  //   fetchData();
-  // }, []);
+    fetchData();
+  }, []);
 
-  // if (loading) return <div className="text-center py-20">Loading...</div>;
-  // if (error) return <div className="text-center py-20 text-red-600">{error}</div>;
+  if (loading) return <div className="text-center py-20">Loading...</div>;
+  if (error) return <div className="text-center py-20 text-red-600">{error}</div>;
 
   return (
     <>
       <NavBar func={scrollToPackages} />
-      {/* <HeroSection handleFilterChange={handleFilterChange} scrollToPackages={scrollToPackages} /> */}
+      <HeroSection handleFilterChange={handleFilterChange} scrollToPackages={scrollToPackages} />
       <TrendingDestinations />
-      {/* <PackageList packages={packages} refProp={packagesRef} /> */}
+      <PackageList packages={packages} refProp={packagesRef} />
       
       <ContactSection />
       {/* <BlogSection blogPosts={blogPosts} /> */}
+      <Footer/>
     </>
   );
 };

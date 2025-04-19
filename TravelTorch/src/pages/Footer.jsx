@@ -38,7 +38,7 @@ const Footer = () => {
         {/* Contact Info */}
         <div>
           <h4 className="text-lg font-semibold text-white mb-3">Contact Us</h4>
-          <p>📍 Thamel, Kathmandu, Nepal</p>
+          <p>📍 Itahari, Sunsari, Nepal</p>
           <p>📧 support@traveltorch.com</p>
           <p>📞 +977 9801234567</p>
         </div>

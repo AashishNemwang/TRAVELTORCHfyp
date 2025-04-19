@@ -15,14 +15,14 @@ const AgencyDash = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch user data
+        // Fetch user data first
         const userResponse = await axios.get('http://localhost:5000/api/auth/me', {
           withCredentials: true
         });
         setUser(userResponse.data);
 
-        // Fetch packages
-        const packagesResponse = await axios.get('http://localhost:5000/api/packages/my', {
+        // Then fetch packages using the agency_id from the user response
+        const packagesResponse = await axios.get(`http://localhost:5000/api/packages/agency/${userResponse.data._id}`, {
           withCredentials: true
         });
         setPackages(packagesResponse.data);
@@ -40,10 +40,10 @@ const AgencyDash = () => {
 
   // Load bookings only when 'bookings' tab is active
   useEffect(() => {
-    if (activeTab === 'bookings') {
+    if (activeTab === 'bookings' && user) {
       const fetchBookings = async () => {
         try {
-          const response = await axios.get('http://localhost:5000/api/bookings/my', {
+          const response = await axios.get(`http://localhost:5000/api/bookings/agency/${user._id}`, {
             withCredentials: true
           });
           setBookings(response.data);
@@ -53,8 +53,10 @@ const AgencyDash = () => {
       };
       fetchBookings();
     }
-  }, [activeTab]);
+  }, [activeTab, user]);
 
+  // ... rest of the component remains the same ...
+  
   const handleLogout = async () => {
     try {
       await axios.post('http://localhost:5000/api/auth/logout', {}, {
