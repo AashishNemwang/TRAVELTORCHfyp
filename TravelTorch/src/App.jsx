@@ -9,11 +9,13 @@ import BookingPage from "./pages/BookingPage";
 import MyBookings from "./pages/MyBookings";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminBlogs from "./pages/AdminBlogs";
-import TravelerBlogs from "./pages/TravelerBlogs";
-import BlogDetails from "./pages/BlogDetails";
+// import Testimonial from './components/ui/Testimonial';
+// import TravelerBlogs from "./pages/TravelerBlogs";
+// import BlogDetails from "./pages/BlogDetails";
 import axios from 'axios';
 import { getContext } from './components/Contextapi';
 import CreatePackage from './pages/CreatePackage';
+import Testimonial from './components/ui/Testimonial';
 
 
 
@@ -62,14 +64,15 @@ const App = () => {
         <Route path="/createPackage" element={<CreatePackage/>} />
         
         <Route path="/mybookings" element={<MyBookings />} />
+        <Route path="/testim" element={<MyBookings />} />
 
         <Route path="/adminDashboard" element={<AdminDashboard />} />
 
         <Route path="/admin/blogs" element={<AdminBlogs />} />
 
-        <Route path="/blogs" element={<TravelerBlogs />} />
+        {/* <Route path="/blogs" element={<TravelerBlogs />} /> */}
 
-        <Route path="/blogs/:id" element={<BlogDetails />} />
+        {/* <Route path="/blogs/:id" element={<BlogDetails />} /> */}
       </Routes>
         
 

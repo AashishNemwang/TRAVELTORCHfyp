@@ -26,7 +26,6 @@ const NavBar = ({func=()=>{}}) => {
           <div className="space-x-4 flex font-semibold text-lg">
             <button onClick={() => navigate('/')} className=" text-white px-4 py-2 rounded hover:bg-gray-600 ">Home</button>
             <button onClick={func} className=" text-white px-4 py-2 rounded hover:bg-gray-600 ">Packages</button>
-            <button onClick={() => navigate('/contact')} className=" text-white px-4 py-2 rounded hover:bg-gray-600">Contact</button>
             {
              !user &&
             <Link to="/login" className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-white hover:text-gray-600

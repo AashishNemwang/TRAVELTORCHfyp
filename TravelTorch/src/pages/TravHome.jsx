@@ -5,8 +5,9 @@ import NavBar from '../components/NavBar';
 import HeroSection from './HeroSection';
 import TrendingDestinations from './TrendingDestinations';
 import PackageList from './PackageList';
-import ContactSection from './ContactSection';
-import BlogSection from './BlogSection';
+import Contact from '../components/ui/Contact';
+import Testimonial from '../components/ui/Testimonial';
+// import BlogSection from './BlogSection';
 import Footer from './Footer';
 
 const TravHome = () => {
@@ -53,8 +54,8 @@ const TravHome = () => {
       <HeroSection handleFilterChange={handleFilterChange} scrollToPackages={scrollToPackages} />
       <TrendingDestinations />
       <PackageList packages={packages} refProp={packagesRef} />
-      
-      <ContactSection />
+      <Testimonial/>
+      <Contact/>
       {/* <BlogSection blogPosts={blogPosts} /> */}
       <Footer/>
     </>
