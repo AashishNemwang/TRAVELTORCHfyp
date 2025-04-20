@@ -9,6 +9,7 @@ import Contact from '../components/ui/Contact';
 import Testimonial from '../components/ui/Testimonial';
 // import BlogSection from './BlogSection';
 import Footer from './Footer';
+import Gallery from '../components/ui/Gallery';
 
 const TravHome = () => {
   const [filters, setFilters] = useState({ destination: '', date: '', category: '' });
@@ -55,6 +56,7 @@ const TravHome = () => {
       <TrendingDestinations />
       <PackageList packages={packages} refProp={packagesRef} />
       <Testimonial/>
+      <Gallery/>
       <Contact/>
       {/* <BlogSection blogPosts={blogPosts} /> */}
       <Footer/>

@@ -5,7 +5,7 @@ import TravHome from './pages/TravHome';
 import AgencyDash from './pages/AgencyDash';
 import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
-import BookingPage from "./pages/BookingPage";
+import BookingPage from "./pages/PackageBooking";
 import MyBookings from "./pages/MyBookings";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminBlogs from "./pages/AdminBlogs";
