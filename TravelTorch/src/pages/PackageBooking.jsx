@@ -20,7 +20,7 @@ const PackageBooking = () => {
     }));
   };
 
-  // Mock package data
+  
   const packageData = {
     name: "Amazon Jungle Adventure",
     destination: "Manaus, Brazil",
@@ -48,7 +48,7 @@ const PackageBooking = () => {
         </div>
 
         <div className="flex flex-col md:flex-row gap-8">
-          {/* Package Summary */}
+          
           <div className="md:w-1/3">
             <div className="bg-white shadow rounded-lg overflow-hidden">
               <div className="bg-gray-200 h-48 flex items-center justify-center">

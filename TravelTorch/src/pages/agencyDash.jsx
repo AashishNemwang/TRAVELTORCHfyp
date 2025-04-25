@@ -11,17 +11,17 @@ const AgencyDash = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch user data and packages on component mount
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch user data first
+        
         const userResponse = await axios.get('http://localhost:5000/api/auth/me', {
           withCredentials: true
         });
         setUser(userResponse.data);
 
-        // Then fetch packages using the agency_id from the user response
+        
         const packagesResponse = await axios.get(`http://localhost:5000/api/packages/agency/${userResponse.data._id}`, {
           withCredentials: true
         });

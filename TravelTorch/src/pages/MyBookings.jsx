@@ -3,7 +3,7 @@ import axios from "axios";
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
-  const [userId] = useState(localStorage.getItem("userId")); // Assume user ID is stored in local storage
+  const [userId] = useState(localStorage.getItem("userId")); 
 
   useEffect(() => {
     fetchBookings();

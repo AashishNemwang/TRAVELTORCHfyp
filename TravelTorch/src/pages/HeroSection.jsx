@@ -1,4 +1,4 @@
-// components/HeroSection.jsx
+
 import React from 'react';
 
 const HeroSection = ({ handleFilterChange, scrollToPackages }) => {
