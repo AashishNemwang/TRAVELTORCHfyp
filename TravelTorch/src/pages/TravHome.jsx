@@ -7,7 +7,7 @@ import TrendingDestinations from './TrendingDestinations';
 import PackageList from './PackageList';
 import Contact from '../components/ui/Contact';
 import Testimonial from '../components/ui/Testimonial';
-// import BlogSection from './BlogSection';
+import BlogSection from '../components/BlogList';
 import Footer from './Footer';
 import Gallery from '../components/ui/Gallery';
 
@@ -58,7 +58,7 @@ const TravHome = () => {
       <Testimonial/>
       <Gallery/>
       <Contact/>
-      {/* <BlogSection blogPosts={blogPosts} /> */}
+      <BlogSection blogPosts={blogPosts} />
       <Footer/>
     </>
   );

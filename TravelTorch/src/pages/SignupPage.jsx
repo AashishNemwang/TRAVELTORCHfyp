@@ -42,7 +42,7 @@ const SignupPage = () => {
       const response=await axios.post('http://localhost:5000/api/auth/signup',formData,{withCredentials:true});
       if(response?.status===200){
         setLoading(true);
-          alert(`Account created as ${formData.role}! (Demo)`);
+          alert(`Account created as ${formData.role}! `);
           setLoading(false);
           navigate('/login');
       }
